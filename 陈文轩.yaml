@@ -1,0 +1,101 @@
+port: 7890
+allow-lan: true
+mode: rule
+log-level: info
+unified-delay: true
+global-client-fingerprint: chrome
+dns:
+  enable: false
+  listen: :53
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  default-nameserver:
+    - 223.5.5.5
+    - 8.8.8.8
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  fallback:
+    - https://1.0.0.1/dns-query
+    - tls://dns.google
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
+
+proxies:
+- name: vless-协议
+  type: vless
+  server: 103.117.120.140
+  port: 12271
+  uuid: e8257f3b-4d42-4460-9ad4-16e6097b196b
+  network: tcp
+  udp: true
+  tls: true
+  flow: xtls-rprx-vision
+  servername: www.yahoo.com
+  reality-opts:
+    public-key: TwapQZXXP-qNgUjl-f3E14b91rH5Lvl9vdPuQfxPqUw
+    short-id: 5205d673
+  client-fingerprint: chrome
+
+- name: vmess-ws-协议
+  type: vmess
+  server: 103.117.120.140
+  port: 12272
+  uuid: e8257f3b-4d42-4460-9ad4-16e6097b196b
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: false
+  network: ws
+  servername: www.bing.com
+  ws-opts:
+    path: "e8257f3b-4d42-4460-9ad4-16e6097b196b-vm"
+    headers:
+      Host: www.bing.com
+
+
+
+
+
+- name: hysteria2-协议
+  type: hysteria2
+  server: 103.117.120.140
+  port: 12273
+  password: e8257f3b-4d42-4460-9ad4-16e6097b196b
+  alpn:
+    - h3
+  sni: www.bing.com
+  skip-cert-verify: true
+  fast-open: true
+
+- name: tuic5协议
+  server: 103.117.120.140
+  port: 12274
+  type: tuic
+  uuid: e8257f3b-4d42-4460-9ad4-16e6097b196b
+  password: e8257f3b-4d42-4460-9ad4-16e6097b196b
+  alpn: [h3]
+  disable-sni: true
+  reduce-rtt: true
+  udp-relay-mode: native
+  congestion-controller: bbr
+  sni: www.bing.com
+  skip-cert-verify: true
+
+proxy-groups:
+
+
+- name: 🌍选择代理节点
+  type: select
+  proxies:
+    - DIRECT
+    - vless-协议
+    - vmess-ws-协议
+rules:
+  - GEOIP,LAN,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,🌍选择代理节点
